@@ -43,6 +43,7 @@ class O2Sensor(AnalogSensor):
     
     def _get_concentration(self):
         self.current_voltage = self._get_voltage()
+        # transfer function from datasheet:
         self.concentration = 0.61051865721074 + 1965.68158984 * self.current_voltage
         return round(self.concentration, 4)
     
@@ -68,6 +69,8 @@ class PressureSensor(AnalogSensor):
 class Valve:
     def __init__(self, valve_relay_pin):
         self.relay_pin = valve_relay_pin
+        
+        # dictionary to convert relay number to GPIO pin:
         self.valvepin_gpio = {1 : 26,
                               2 : 21,
                               3 : 20,
@@ -110,15 +113,16 @@ if __name__ == "__main__":
     try:
         log = DataLog()
         
-        # timing
+        # timing (seconds)
         phase1 = 4
         d_phase1_phase2 = 3
         phase2 = phase1 + d_phase1_phase2 
         
-        # instantiate sensors and valves
+        # instantiate sensors
         sgx = O2Sensor(1)
         mpx = PressureSensor(4)
         
+        # instantiate valves
         r1 = Valve(1)
         r2 = Valve(2)
         r3 = Valve(3)
@@ -172,6 +176,7 @@ if __name__ == "__main__":
         ax1.legend(loc="upper right")
         
         # animation sampling interval
+        # 240ms is found to be the most optimal sampling interval
         sampling_interval = 240
         
         # animation functions
